@@ -12,6 +12,8 @@ var mkdir = require('mkdirp').sync
 var icon, menu
 
 app.on('ready', function() {
+  app.dock.hide()
+  
   // main.js
   var template = []
 
