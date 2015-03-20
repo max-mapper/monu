@@ -1,0 +1,18 @@
+{
+  "name": "monu",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "BSD",
+  "dependencies": {
+    "auto-launch": "^0.1.15",
+    "mkdirp": "^0.5.0",
+    "mongroup": "maxogden/node-mongroup#monbin",
+    "ms": "^0.7.0",
+    "npm-execspawn": "^1.0.6"
+  }
+}

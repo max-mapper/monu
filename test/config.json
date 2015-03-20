@@ -1,0 +1,7 @@
+{
+  "logs": "./meta/logs",
+  "pids": "./meta/pids",
+  "processes": {
+    "web-1": "http-server ."    
+  }
+}
