@@ -7,9 +7,9 @@ var $ = require('jquery')
 Ractive.DEBUG = false
 
 var templates = {
-  configure: fs.readFileSync('./configure.tmpl').toString(),
-  detail: fs.readFileSync('./detail.tmpl').toString(),
-  about: fs.readFileSync('./about.html').toString()
+  configure: fs.readFileSync(__dirname + '/configure.tmpl').toString(),
+  detail: fs.readFileSync(__dirname + '/detail.tmpl').toString(),
+  about: fs.readFileSync(__dirname + '/about.html').toString()
 }
 
 var state = {}

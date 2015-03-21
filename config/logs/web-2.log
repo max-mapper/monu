@@ -1,9 +1,0 @@
-[33mStarting up http-server, serving [39m[36m.[39m[33m on port: [39m[36m8086[39m
-Hit CTRL-C to stop the server
-mon : write mon pid to /Users/maxogden/src/js/monu/config/pids/web-2.mon.pid
-mon : child 13975
-mon : write pid to /Users/maxogden/src/js/monu/config/pids/web-2.pid
-mon : shutting down
-mon : kill(-13974, 3)
-mon : waiting for exit
-mon : bye :)

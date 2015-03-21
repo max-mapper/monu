@@ -74,7 +74,7 @@ app.on('ready', function() {
   }) 
   
   function loadConfig() {
-    var configFile = './config/config.json'
+    var configFile = __dirname + '/config/config.json'
     var conf
     
     try {
@@ -109,7 +109,7 @@ app.on('ready', function() {
     })
     configure.setPosition(size.workArea.width - 500, size.workArea.y)
     configure.on('blur', hideConfigure)
-    configure.loadUrl('file://' + __dirname + '/configure.html')
+    configure.loadUrl('file://' + __dirname + '/index.html')
   }
   
   function hideConfigure() {
