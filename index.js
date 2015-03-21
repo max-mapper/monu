@@ -15,6 +15,9 @@ var debug = require('debug')('monu')
 
 var icon, menu, configure, about
 
+// launching from .app doesnt use bash and never loads .e.g. .bash_profile
+process.env.PATH = '/usr/local/bin:' + process.env.PATH
+
 app.on('ready', function() {
   app.dock.hide()
   var atomScreen = require('screen')
