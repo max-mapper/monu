@@ -13,6 +13,7 @@
     "mkdirp": "^0.5.0",
     "mongroup": "maxogden/node-mongroup#monbin",
     "ms": "^0.7.0",
+    "mustache": "^1.1.0",
     "npm-execspawn": "^1.0.6"
   }
 }

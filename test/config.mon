@@ -1,0 +1,3 @@
+logs = ./meta/logs
+pids = ./meta/pids
+web-1 = http-server .
