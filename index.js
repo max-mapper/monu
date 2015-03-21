@@ -1,4 +1,5 @@
 var path = require('path')
+var child = require('child_process')
 
 var app = require('app')
 var Menu = require('menu')
@@ -26,28 +27,15 @@ app.on('ready', function() {
     e.preventDefault()
   })
   
-  var template = []
-
-  var iconPath = path.join(__dirname, 'images', 'Status.png')
-  var configFile = './test/config.json'
-  var conf = require(configFile)
-  var dir = path.dirname(configFile)
-  
-  conf.exec = {cwd: path.resolve(dir)}
-  conf.logs = path.resolve(path.join(dir, conf.logs || 'logs'))
-  conf.pids = path.resolve(path.join(dir, conf.pids || 'pids'))
-  
-  mkdir(conf.logs)
-  mkdir(conf.pids)
-  
-  conf.mon = path.join(__dirname, 'mon')
+  var conf = loadConfig()
   
   // start all once
   start([], function started (err) {
     if (err) return console.log("error starting processes: " + err.message)
     console.log("started all processes")
   })
-  
+
+  var iconPath = path.join(__dirname, 'images', 'Icon.png')
   icon = new Tray(iconPath)
   
   icon.on('clicked', function(e) {
@@ -58,6 +46,10 @@ app.on('ready', function() {
   ipc.on('terminate', function terminate (ev) {
     canQuit = true
     app.terminate()
+  })
+  
+  ipc.on('open-dir', function openDir (ev) {
+    child.exec('open ' + conf.exec.cwd, function(err) {})
   })
   
   ipc.on('get-all', function getAll (ev, data) {
@@ -80,6 +72,29 @@ app.on('ready', function() {
       getStatus(null, data.name)
     }
   }) 
+  
+  function loadConfig() {
+    var configFile = './config/config.json'
+    var conf
+    
+    try {
+      conf = JSON.parse(fs.readFileSync(configFile))
+    } catch (e) {
+      throw new Error('Invalid configuration file -- could not parse JSON')
+    }
+    
+    var dir = path.dirname(configFile)
+  
+    conf.exec = {cwd: path.resolve(dir)}
+    conf.logs = path.resolve(path.join(dir, conf.logs || 'logs'))
+    conf.pids = path.resolve(path.join(dir, conf.pids || 'pids'))
+  
+    mkdir(conf.logs)
+    mkdir(conf.pids)
+  
+    conf.mon = path.join(__dirname, 'mon')
+    return conf
+  }
   
   function showConfigure() {
     if (configure) {
@@ -104,7 +119,8 @@ app.on('ready', function() {
   function getStatus(err, procName) {
     if (err) throw err
     if (!configure) return
-    debug('get proc status...')
+    debug('reload config, get proc status...')
+    conf = loadConfig()
     var status = []
     var group = new Mongroup(conf)
     var procs = group.procs

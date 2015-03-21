@@ -8,7 +8,8 @@ Ractive.DEBUG = false
 
 var templates = {
   configure: fs.readFileSync('./configure.tmpl').toString(),
-  detail: fs.readFileSync('./detail.tmpl').toString()
+  detail: fs.readFileSync('./detail.tmpl').toString(),
+  about: fs.readFileSync('./about.html').toString()
 }
 
 var state = {}
@@ -23,6 +24,10 @@ $(document).on('click', '.processAction', function(e) {
 
 $(document).on('click', '.btn.quit', function(e) {
   ipc.send('terminate')
+})
+
+$(document).on('click', '.btn.open-dir', function(e) {
+  ipc.send('open-dir')
 })
 
 ipc.on('got-all', function gotAll (data) {
@@ -41,7 +46,9 @@ ipc.on('got-all', function gotAll (data) {
     d.message = "Not Running"
     return d
   })
-  state.configure.set({items: data})
+  var obj = {items: data}
+  if (data.length > 0) obj.hasProcesses = true
+  state.configure.set(obj)
 })
 
 ipc.on('got-one', function gotOne (data) {
@@ -64,12 +71,17 @@ var routes = {
     ipc.once('status', function() {
       next()
     })
+  },
+  about: function(ctx, next) {
+    ctx.template = templates.about
+    state.about = render(ctx, {})
   }
 }
 
 // set up routes
 page('/', routes.configure)
 page('/detail/:name', routes.detail)
+page('/about', routes.about)
 
 // initialize router
 page.start()

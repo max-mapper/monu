@@ -1,9 +1,0 @@
-{
-  "logs": "./meta/logs",
-  "pids": "./meta/pids",
-  "processes": {
-    "web-1": "http-server .",
-    "web-2": "http-server . -p 8085",
-    "web-3": "http-server . -p 8090"
-  }
-}
