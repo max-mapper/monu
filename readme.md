@@ -4,6 +4,8 @@ Monu is an open source process monitoring menu bar application for Mac OS. You c
 
 Monu is a portmanteau of 'monitor' and 'menu'. It has two C/C++ dependencies, [Atom Shell](https://github.com/atom/atom-shell) (which includes iojs) and the [mon](https://github.com/tj/mon) process monitor.
 
+Monu is currently **ALPHA STATUS** and is intended for developers/early adopters.
+
 To download the latest version visit the [releases page](https://github.com/maxogden/monu/releases)
 
 ![screenshot.png](screenshot.png)

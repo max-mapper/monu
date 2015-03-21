@@ -107,7 +107,7 @@ app.on('ready', function() {
       show: true,
       frame: false
     })
-    configure.setPosition(size.workArea.width - 500, size.workArea.y)
+    configure.setPosition(size.workArea.width - 600, size.workArea.y)
     configure.on('blur', hideConfigure)
     configure.loadUrl('file://' + __dirname + '/index.html')
   }
