@@ -16,85 +16,107 @@ var icon, menu, configure, about
 
 app.on('ready', function() {
   app.dock.hide()
-  
+  var atomScreen = require('screen')
+  var size = atomScreen.getPrimaryDisplay()
+
+  var canQuit = false
   app.on('will-quit', function(e) {
+    if (canQuit) return true
     configure = undefined
     e.preventDefault()
   })
   
-  // main.js
   var template = []
 
   var iconPath = path.join(__dirname, 'images', 'Status.png')
   var configFile = './test/config.json'
   var conf = require(configFile)
   var dir = path.dirname(configFile)
+  
   conf.exec = {cwd: path.resolve(dir)}
   conf.logs = path.resolve(path.join(dir, conf.logs || 'logs'))
   conf.pids = path.resolve(path.join(dir, conf.pids || 'pids'))
+  
   mkdir(conf.logs)
   mkdir(conf.pids)
   
   conf.mon = path.join(__dirname, 'mon')
+  
+  // start all once
+  start([], function started (err) {
+    if (err) return console.log("error starting processes: " + err.message)
+    console.log("started all processes")
+  })
+  
   icon = new Tray(iconPath)
+  
+  icon.on('clicked', function(e) {
+    if (configure && configure.isVisible()) return hideConfigure()
+    showConfigure()
+  })
 
-  var menuTemplate = [
-    {
-      label: 'Configure...',
-      click: function() {
-        showConfigure()
-      }
-    },
-    { 
-      type: 'separator'
-    },
-    {
-      label: 'About',
-      click: function() {
-        showAbout()
-      }
-    },
-    {
-      label: 'Quit',
-      click: function() {
-        app.terminate()
-      }
-    }
-  ]
+  ipc.on('terminate', function terminate (ev) {
+    canQuit = true
+    app.terminate()
+  })
   
-  showConfigure()
+  ipc.on('get-all', function getAll (ev, data) {
+    getStatus()
+  })
   
-  menu = Menu.buildFromTemplate(menuTemplate)  
-  icon.setContextMenu(menu)
+  ipc.on('get-one', function getOne (ev, data) {
+    getStatus(null, data.name)
+  })
   
-  ipc.on('update-me', updateStatus)
   ipc.on('task', function task (ev, data) {
-    if (data.task === "startAll") startAll(updateStatus)
-    if (data.task === "stopAll") stopAll(updateStatus)
-    if (data.task === "restartAll") restartAll(updateStatus)
+    if (data.task === "startAll") start([], getStatus)
+    if (data.task === "stopAll") stop([], getStatus)
+    if (data.task === "restartAll") restart([], getStatus)
+    if (data.task === "start") start([data.name], updateSingle)
+    if (data.task === "stop") stop([data.name], updateSingle)
+    if (data.task === "restart") restart([data.name], updateSingle)
+      
+    function updateSingle() {
+      getStatus(null, data.name)
+    }
   }) 
   
   function showConfigure() {
-    if (configure) return configure.show( )
+    if (configure) {
+      getStatus()
+      return configure.show()
+    }
     configure = new BrowserWindow({
       width: 400,
       height: 400,
-      show: true
+      show: true,
+      frame: false
     })
+    configure.setPosition(size.workArea.width - 500, size.workArea.y)
+    configure.on('blur', hideConfigure)
     configure.loadUrl('file://' + __dirname + '/configure.html')
   }
   
-  function updateStatus() {
+  function hideConfigure() {
+    if (configure) return configure.hide()
+  }
+  
+  function getStatus(err, procName) {
+    if (err) throw err
     if (!configure) return
-    debug('update status...')
+    debug('get proc status...')
     var status = []
     var group = new Mongroup(conf)
-    group.procs.forEach(function(proc) {
+    var procs = group.procs
+    if (procName) procs = procs.filter(function filter (proc) {
+      return proc.name === procName
+    })
+    procs.forEach(function(proc) {
       var state = proc.state()
       var uptime
       if (state === 'alive') uptime = ms(Date.now() - proc.mtime(), { long: true })
-
       var item = {
+        cmd: proc.cmd,
         name: proc.name,
         state: state,
         pid: proc.pid
@@ -105,28 +127,29 @@ app.on('ready', function() {
       status.push(item)
     })
     
-    configure.webContents.send('status', status)
+    if (procName) configure.webContents.send('got-one', status[0])
+    else configure.webContents.send('got-all', status)
   }
   
-  function restartAll(cb) {
-    stopAll(function (err1) {
-      startAll(function (err2) {
+  function restart(procs, cb) {
+    stop(procs, function (err1) {
+      start(procs, function (err2) {
         if (cb) cb(err1 || err2)
       })
     })
   }
   
-  function startAll(cb) {
+  function start(procs, cb) {
     var group = new Mongroup(conf)
-    group.start([], function (err) {
+    group.start(procs, function (err) {
       if (err) return cb(err)
       cb()
     })
   }
 
-  function stopAll(cb) {
+  function stop(procs, cb) {
     var group = new Mongroup(conf)
-    group.stop([], 'SIGQUIT', function (err) {
+    group.stop(procs, 'SIGQUIT', function (err) {
       if (cb) return cb(err)
       cb()
     })

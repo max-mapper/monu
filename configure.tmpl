@@ -1,0 +1,35 @@
+<ul class="table-view">
+  {{#items}}
+    <li class="table-view-cell media"><a href="/detail/{{name}}" class="navigate-right"><span class="media-object pull-left icon icon-gear"></span> {{name}} <button class="btn {{classes}}">{{message}}</button></a></li>
+  {{/items}}
+  <li class="table-view-cell table-view-divider">Actions</li>
+  <li class="table-view-cell media">
+    <a rel="external" class="processAction" data-action="startAll">
+      <span class="media-object pull-left icon icon-play"></span>
+      <div class="media-body">
+        Start All
+      </div>
+    </a>
+  </li>
+  <li class="table-view-cell media">
+    <a rel="external" class="processAction" data-action="stopAll">
+      <span class="media-object pull-left icon icon-stop"></span>
+      <div class="media-body">
+        Stop All
+      </div>
+    </a>
+  </li>
+  <li class="table-view-cell media">
+    <a rel="external" class="processAction" data-action="restartAll">
+      <span class="media-object pull-left icon icon-refresh"></span>
+      <div class="media-body">
+        Restart All
+      </div>
+    </a>
+  </li>
+</ul>
+<div class="bar bar-standard bar-footer">
+  <button class="btn pull-right quit">
+    Quit
+  </button>
+</div>

@@ -1,0 +1,42 @@
+<header class="bar bar-nav">
+  <a href="/">
+    <button class="btn btn-link btn-nav pull-left">
+      <span class="icon icon-left-nav"></span>
+      Back
+    </button>
+  </a>
+  <h1 class="title">{{name}}</h1>
+</header>
+<div class="content">
+  <ul class="table-view">
+    {{#uptime}}<li class="table-view-cell">Uptime<p>{{uptime}}</li>{{/uptime}}
+    {{#pid}}<li class="table-view-cell">PID<p>{{pid}}</li>{{/pid}}
+    {{#state}}<li class="table-view-cell">State<p>{{state}}</li>{{/state}}
+    {{#cmd}}<li class="table-view-cell">CMD<p>{{cmd}}</li>{{/cmd}}
+    <li class="table-view-cell table-view-divider">Actions</li>
+    <li class="table-view-cell media">
+      <a rel="external" class="processAction" data-action="start" data-name="{{name}}">
+        <span class="media-object pull-left icon icon-play"></span>
+        <div class="media-body">
+          Start
+        </div>
+      </a>
+    </li>
+    <li class="table-view-cell media">
+      <a rel="external" class="processAction" data-action="stop" data-name="{{name}}">
+        <span class="media-object pull-left icon icon-stop"></span>
+        <div class="media-body">
+          Stop
+        </div>
+      </a>
+    </li>
+    <li class="table-view-cell media">
+      <a rel="external" class="processAction" data-action="restart" data-name="{{name}}">
+        <span class="media-object pull-left icon icon-refresh"></span>
+        <div class="media-body">
+          Restart
+        </div>
+      </a>
+    </li>
+  </ul>
+</div>
