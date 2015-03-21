@@ -10,6 +10,7 @@
   "license": "BSD",
   "dependencies": {
     "auto-launch": "^0.1.15",
+    "debug": "^2.1.3",
     "mkdirp": "^0.5.0",
     "mongroup": "maxogden/node-mongroup#monbin",
     "ms": "^0.7.0",
