@@ -1,9 +1,9 @@
 <ul class="table-view">
+  <li class="table-view-cell table-view-divider">Processes</li>
   {{#items}}
     <li class="table-view-cell media"><a href="/detail/{{name}}" class="navigate-right"><span class="media-object pull-left icon icon-gear"></span> {{name}} <button class="btn {{classes}}">{{message}}</button></a></li>
   {{/items}}
   {{^items}}
-    <li class="table-view-cell table-view-divider">Processes</li>
     <li class="table-view-cell media">No Processes Configured</li>
   {{/items}}
   <li class="table-view-cell table-view-divider">Actions</li>
