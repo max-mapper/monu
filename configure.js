@@ -2,7 +2,6 @@ var ipc = require('ipc')
 var Ractive = require('ractive')
 var page = require('page')
 var fs = require('fs')
-var $ = require('jquery')
 
 Ractive.DEBUG = false
 
@@ -14,21 +13,23 @@ var templates = {
 
 var state = {}
 
-$(document).on('click', '.processAction', function(e) {
-  var action = e.currentTarget.attributes['data-action'].value
-  var procNameAttr = e.currentTarget.attributes['data-name']
-  var data = {task: action}
-  if (procNameAttr) data.name = procNameAttr.value
-  ipc.send('task', data)
-})
+var events = {
+  processAction: function (e) {
+    var action = e.node.attributes['data-action'].value
+    var procNameAttr = e.node.attributes['data-name']
+    var data = {task: action}
+    if (procNameAttr) data.name = procNameAttr.value
+    ipc.send('task', data)
+  },
 
-$(document).on('click', '.btn.quit', function(e) {
-  ipc.send('terminate')
-})
+  quit: function () {
+    ipc.send('terminate')
+  },
 
-$(document).on('click', '.btn.open-dir', function(e) {
-  ipc.send('open-dir')
-})
+  openDir: function () {
+    ipc.send('open-dir')
+  }
+}
 
 ipc.on('got-all', function gotAll (data) {
   data = data.map(function map (d) {
@@ -88,9 +89,12 @@ page.start()
 page('/')
 
 function render(ctx) {
-  return new Ractive({
+  var ract = new Ractive({
     el: "#container",
     template: ctx.template,
     data: ctx.data
   })
+
+  ract.on(events)
+  return ract
 }

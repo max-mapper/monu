@@ -15,7 +15,7 @@
     {{#cmd}}<li class="table-view-cell">CMD<p>{{cmd}}</li>{{/cmd}}
     <li class="table-view-cell table-view-divider">Actions</li>
     <li class="table-view-cell media">
-      <a rel="external" class="processAction" data-action="start" data-name="{{name}}">
+      <a rel="external" on-click="processAction" data-action="start" data-name="{{name}}">
         <span class="media-object pull-left icon icon-play"></span>
         <div class="media-body">
           Start
@@ -23,7 +23,7 @@
       </a>
     </li>
     <li class="table-view-cell media">
-      <a rel="external" class="processAction" data-action="stop" data-name="{{name}}">
+      <a rel="external" on-click="processAction" data-action="stop" data-name="{{name}}">
         <span class="media-object pull-left icon icon-stop"></span>
         <div class="media-body">
           Stop
@@ -31,7 +31,7 @@
       </a>
     </li>
     <li class="table-view-cell media">
-      <a rel="external" class="processAction" data-action="restart" data-name="{{name}}">
+      <a rel="external" on-click="processAction" data-action="restart" data-name="{{name}}">
         <span class="media-object pull-left icon icon-refresh"></span>
         <div class="media-body">
           Restart
