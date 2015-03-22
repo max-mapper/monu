@@ -53,7 +53,7 @@ app.on('ready', function() {
   })
   
   ipc.on('open-dir', function openDir (ev) {
-    shell.showItemInFolder(conf.exec.cwd)
+    shell.showItemInFolder(path.join(conf.exec.cwd, 'config.json'))
   })
   
   ipc.on('get-all', function getAll (ev, data) {
@@ -78,7 +78,7 @@ app.on('ready', function() {
   }) 
   
   function loadConfig() {
-    var dir = app.getPath('userData')
+    var dir = path.join(app.getPath('userData'), 'data')
     var configFile = dir + '/config.json'
     var conf, data
 
@@ -86,6 +86,7 @@ app.on('ready', function() {
       data = fs.readFileSync(configFile)
     } catch (e) {
       if (e.code === 'ENOENT') {
+        mkdir(dir)
         fs.writeFileSync(configFile, fs.readFileSync(__dirname + '/config.json'))
         return loadConfig()
       } else {
