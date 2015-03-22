@@ -6,13 +6,13 @@ var Menu = require('menu')
 var Tray = require('tray')
 var BrowserWindow = require('browser-window')
 var ipc = require('ipc')
+var shell = require('shell')
 
 var ms = require('ms')
 var Mongroup = require('mongroup')
 var fs = require('fs')
 var mkdir = require('mkdirp').sync
 var debug = require('debug')('monu')
-var open = require('open')
 
 var icon, menu, configure, about
 
@@ -53,7 +53,7 @@ app.on('ready', function() {
   })
   
   ipc.on('open-dir', function openDir (ev) {
-    open(conf.exec.cwd)
+    shell.showItemInFolder(conf.exec.cwd)
   })
   
   ipc.on('get-all', function getAll (ev, data) {
