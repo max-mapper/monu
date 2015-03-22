@@ -5,7 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "app": "atom-shell ./"
   },
   "author": "",
   "license": "BSD",
@@ -18,7 +19,11 @@
     "ms": "^0.7.0",
     "mustache": "^1.1.0",
     "npm-execspawn": "^1.0.6",
+    "open": "0.0.5",
     "page": "^1.6.1",
     "ractive": "^0.7.1"
+  },
+  "devDependencies": {
+    "atom-shell": "^0.22.1"
   }
 }

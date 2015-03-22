@@ -12,6 +12,7 @@ var Mongroup = require('mongroup')
 var fs = require('fs')
 var mkdir = require('mkdirp').sync
 var debug = require('debug')('monu')
+var open = require('open')
 
 var icon, menu, configure, about
 
@@ -52,7 +53,7 @@ app.on('ready', function() {
   })
   
   ipc.on('open-dir', function openDir (ev) {
-    child.exec('open ' + conf.exec.cwd, function(err) {})
+    open(conf.exec.cwd)
   })
   
   ipc.on('get-all', function getAll (ev, data) {
@@ -77,18 +78,28 @@ app.on('ready', function() {
   }) 
   
   function loadConfig() {
-    var configFile = __dirname + '/config/config.json'
-    var conf
-    
+    var dir = app.getPath('userData')
+    var configFile = dir + '/config.json'
+    var conf, data
+
     try {
-      conf = JSON.parse(fs.readFileSync(configFile))
+      data = fs.readFileSync(configFile)
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        fs.writeFileSync(configFile, fs.readFileSync(__dirname + '/config.json'))
+        return loadConfig()
+      } else {
+        throw e
+      }
+    }
+
+    try {
+      conf = JSON.parse(data.toString())
     } catch (e) {
       throw new Error('Invalid configuration file -- could not parse JSON')
     }
-    
-    var dir = path.dirname(configFile)
-  
-    conf.exec = {cwd: path.resolve(dir)}
+
+    conf.exec = {cwd: dir}
     conf.logs = path.resolve(path.join(dir, conf.logs || 'logs'))
     conf.pids = path.resolve(path.join(dir, conf.pids || 'pids'))
   
