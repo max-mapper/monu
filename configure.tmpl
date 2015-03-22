@@ -9,7 +9,7 @@
   <li class="table-view-cell table-view-divider">Actions</li>
   {{#hasProcesses}}
   <li class="table-view-cell media">
-    <a rel="external" class="processAction" data-action="startAll">
+    <a rel="external" on-click="processAction" data-action="startAll">
       <span class="media-object pull-left icon icon-play"></span>
       <div class="media-body">
         Start All
@@ -17,7 +17,7 @@
     </a>
   </li>
   <li class="table-view-cell media">
-    <a rel="external" class="processAction" data-action="stopAll">
+    <a rel="external" on-click="processAction" data-action="stopAll">
       <span class="media-object pull-left icon icon-stop"></span>
       <div class="media-body">
         Stop All
@@ -25,7 +25,7 @@
     </a>
   </li>
   <li class="table-view-cell media">
-    <a rel="external" class="processAction" data-action="restartAll">
+    <a rel="external" on-click="processAction" data-action="restartAll">
       <span class="media-object pull-left icon icon-refresh"></span>
       <div class="media-body">
         Restart All
@@ -43,10 +43,10 @@
   </li>
 </ul>
 <div class="bar bar-standard bar-footer">
-  <button class="btn pull-left open-dir">
+  <button class="btn pull-left" on-click="openDir">
     Open Config Folder
   </button>
-  <button class="btn pull-right quit">
+  <button class="btn pull-right" on-click="quit">
     Quit
   </button>
 </div>
