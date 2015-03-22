@@ -50,3 +50,10 @@ In the 'config.json' file add processes to the 'processes' key. The key must be 
 When you open Monu.app, it will start all configured processes.
 
 If you would like Monu.app to start when your Mac starts up, got to <b>System Preferences &gt; Users and Groups</b> and add Monu.app to <b>Login Items</b> for your User.
+
+##### Developing
+
+```bash
+npm install # installs atom-shell and all the deps needed for monu
+npm run app # runs the app in the atom-shell wrapper
+```
