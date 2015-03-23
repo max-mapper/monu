@@ -62,3 +62,13 @@ npm install # installs atom-shell and all the deps needed for monu
 npm run app # runs the app in the atom-shell wrapper
 npm run build # builds the mac app
 ```
+
+##### Publishing
+
+Before publishing, make sure that your repo is clean, and that you've created a tag for the latest commit. `npm version [major|minor|patch]` will do this for you, increasing the package.json version, creating a commit and adding a tag.
+
+To publish, you'll need to make an authentication token. Go to https://github.com/settings/tokens/new, and create a token like this:
+
+![screenshot](http://f.cl.ly/items/3W1H2C2Z0R2X0Q1s0X18/Screen%20Shot%202015-03-22%20at%205.39.32%20PM.png)
+
+Set that token as the environment variable `MONU_AUTH_TOKEN`. Then, run `make publish`.
