@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "standard",
     "app": "atom-shell ./",
     "build": "atom-shell-packager . Monu --ignore=node_modules/atom-shell"
   },
@@ -24,6 +24,7 @@
     "ractive": "^0.7.1"
   },
   "devDependencies": {
-    "atom-shell": "^0.22.1"
+    "atom-shell": "^0.22.1",
+    "standard": "^3.2.1"
   }
 }

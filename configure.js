@@ -28,8 +28,8 @@ var events = {
 
   openDir: function () {
     ipc.send('open-dir')
-  }, 
-  
+  },
+
   openLogsDir: function (e) {
     ipc.send('open-logs-dir', e.context.name)
   }
@@ -38,17 +38,17 @@ var events = {
 ipc.on('got-all', function gotAll (data) {
   data = data.map(function map (d) {
     if (d.uptime) {
-      d.classes = "btn-positive"
-      d.message = "Running"
+      d.classes = 'btn-positive'
+      d.message = 'Running'
       return d
     }
     if (d.state === 'dead') {
-      d.classes = "btn-negative"
-      d.message = "Dead"
+      d.classes = 'btn-negative'
+      d.message = 'Dead'
       return d
     }
-    
-    d.message = "Not Running"
+
+    d.message = 'Not Running'
     return d
   })
   var obj = {items: data}
@@ -61,23 +61,23 @@ ipc.on('got-one', function gotOne (data) {
 })
 
 var routes = {
-  configure: function(ctx, next) {
+  configure: function configure (ctx, next) {
     ctx.template = templates.configure
     state.configure = render(ctx, {loading: true})
     ipc.send('get-all')
-    ipc.once('status', function() {
+    ipc.once('status', function gotOnce () {
       next()
     })
   },
-  detail: function(ctx, next) {
+  detail: function detail (ctx, next) {
     ctx.template = templates.detail
     state.detail = render(ctx, {loading: true})
     ipc.send('get-one', {name: ctx.params.name})
-    ipc.once('status', function() {
+    ipc.once('status', function gotOnce () {
       next()
     })
   },
-  about: function(ctx, next) {
+  about: function about (ctx, next) {
     ctx.template = templates.about
     state.about = render(ctx, {})
   }
@@ -92,9 +92,9 @@ page('/about', routes.about)
 page.start()
 page('/')
 
-function render(ctx) {
+function render (ctx) {
   var ract = new Ractive({
-    el: "#container",
+    el: '#container',
     template: ctx.template,
     data: ctx.data
   })

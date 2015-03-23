@@ -10,6 +10,10 @@ Monu is currently **ALPHA STATUS** and is intended for developers/early adopters
 
 To download the latest version visit the [releases page](https://github.com/maxogden/monu/releases)
 
+[![js-standard-style](https://raw.githubusercontent.com/feross/standard/master/badge.png)](https://github.com/feross/standard)
+
+[![Build Status](https://travis-ci.org/maxogden/monu.svg?branch=master)](https://travis-ci.org/maxogden/monu)
+
 ![screenshot.png](screenshot.png)
 
 ##### How to use Monu
@@ -56,4 +60,5 @@ If you would like Monu.app to start when your Mac starts up, got to <b>System Pr
 ```bash
 npm install # installs atom-shell and all the deps needed for monu
 npm run app # runs the app in the atom-shell wrapper
+npm run build # builds the mac app
 ```
