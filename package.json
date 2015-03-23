@@ -2,14 +2,14 @@
   "name": "monu",
   "productName": "Monu",
   "version": "1.0.3",
-  "description": "",
+  "description": "menubar process monitor mac app",
   "main": "index.js",
   "scripts": {
     "test": "standard",
     "app": "atom-shell ./",
     "build": "atom-shell-packager . Monu --ignore=node_modules/atom-shell"
   },
-  "author": "",
+  "author": "max ogden",
   "license": "BSD",
   "dependencies": {
     "atom-shell-packager": "^1.1.0",
