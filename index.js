@@ -1,31 +1,30 @@
 var path = require('path')
 var fs = require('fs')
 
-var app = require('app')
-var Tray = require('tray')
-var BrowserWindow = require('browser-window')
-var ipc = require('ipc')
-var shell = require('shell')
-
+var menubar = require('menubar')
 var ms = require('ms')
 var Mongroup = require('mongroup')
 var mkdir = require('mkdirp').sync
 var debug = require('debug')('monu')
 
-var icon, configure
+var ipc = require('ipc')
+var shell = require('shell')
 
-// launching from .app doesnt use bash and never loads .e.g. .bash_profile
+// launching from .menu.app doesnt use bash and never loads .e.g. .bash_profile
 process.env.PATH = '/usr/local/bin:' + process.env.PATH
 
-app.on('ready', function ready () {
-  app.dock.hide()
-  var atomScreen = require('screen')
-  var size = atomScreen.getPrimaryDisplay()
+var opts = {
+  dir: __dirname,
+  icon: path.join(__dirname, 'images', 'Icon.png')
+}
 
+var menu = menubar(opts)
+
+menu.on('ready', function ready () {
   var canQuit = false
-  app.on('will-quit', function tryQuit (e) {
+  menu.app.on('will-quit', function tryQuit (e) {
     if (canQuit) return true
-    configure = undefined
+    menu.window = undefined
     e.preventDefault()
   })
 
@@ -37,17 +36,13 @@ app.on('ready', function ready () {
     console.log('started all processes')
   })
 
-  var iconPath = path.join(__dirname, 'images', 'Icon.png')
-  icon = new Tray(iconPath)
-
-  icon.on('clicked', function clicked (e) {
-    if (configure && configure.isVisible()) return hideConfigure()
-    showConfigure()
+  menu.on('show', function show () {
+    getStatus()
   })
 
   ipc.on('terminate', function terminate (ev) {
     canQuit = true
-    app.terminate()
+    menu.app.terminate()
   })
 
   ipc.on('open-dir', function openDir (ev) {
@@ -80,7 +75,7 @@ app.on('ready', function ready () {
   })
 
   function loadConfig () {
-    var dir = path.join(app.getPath('userData'), 'data')
+    var dir = path.join(menu.app.getPath('userData'), 'data')
     var configFile = dir + '/config.json'
     var conf, data
 
@@ -113,29 +108,9 @@ app.on('ready', function ready () {
     return conf
   }
 
-  function showConfigure () {
-    if (configure) {
-      getStatus()
-      return configure.show()
-    }
-    configure = new BrowserWindow({
-      width: 400,
-      height: 400,
-      show: true,
-      frame: false
-    })
-    configure.setPosition(size.workArea.width - 600, size.workArea.y)
-    configure.on('blur', hideConfigure)
-    configure.loadUrl('file://' + __dirname + '/index.html')
-  }
-
-  function hideConfigure () {
-    if (configure) return configure.hide()
-  }
-
   function getStatus (err, procName) {
     if (err) throw err
-    if (!configure) return
+    if (!menu.window) return
     debug('reload config, get proc status...')
     conf = loadConfig()
     var status = []
@@ -162,8 +137,8 @@ app.on('ready', function ready () {
       status.push(item)
     })
 
-    if (procName) configure.webContents.send('got-one', status[0])
-    else configure.webContents.send('got-all', status)
+    if (procName) menu.window.webContents.send('got-one', status[0])
+    else menu.window.webContents.send('got-all', status)
   }
 
   function restart (procs, cb) {
