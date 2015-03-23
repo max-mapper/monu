@@ -72,3 +72,22 @@ To publish, you'll need to make an authentication token. Go to https://github.co
 ![screenshot](http://f.cl.ly/items/3W1H2C2Z0R2X0Q1s0X18/Screen%20Shot%202015-03-22%20at%205.39.32%20PM.png)
 
 Set that token as the environment variable `MONU_AUTH_TOKEN`. Then, run `make publish`.
+
+You should see something like this:
+
+```
+🐈  make publish
+rm -rf Monu.app Monu.zip # prevent duplicates in the final bundle
+npm run build
+
+> monu@1.0.4 build /Users/maxogden/src/js/monu
+> atom-shell-packager . Monu --ignore=node_modules/atom-shell
+
+Wrote new app to /Users/maxogden/src/js/monu/Monu.app
+ditto -c -k --sequesterRsrc --keepParent Monu.app Monu.zip
+node publish-release.js --tag=v1.0.4 --token=<your token>
+child_process: customFds option is deprecated, use stdio instead.
+Creating release...
+Uploading Monu... this may take a minute
+Done! Published at: https://github.com/maxogden/monu/releases/tag/v1.0.4
+```

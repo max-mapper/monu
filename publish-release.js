@@ -3,7 +3,9 @@ var editor = require('string-editor')
 var Github = require('github')
 var argv = require('minimist')(process.argv.slice(2))
 
-if (!argv.token) {
+var token = argv.token || process.env['MONU_AUTH_TOKEN']
+
+if (!token) {
   console.error('ERROR: An auth token is required to publish a release.')
   process.exit(1)
 }
@@ -13,7 +15,7 @@ var gh = new Github({
 })
 gh.authenticate({
   type: 'oauth',
-  token: argv.token
+  token: token
 })
 
 var noteTemplate = 'Replace with release notes\n\nOn first launch you will probably have to **Right Click > Open** Monu.app in order to bypass the Mac OS warning.'
