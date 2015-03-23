@@ -141,9 +141,11 @@ app.on('ready', function ready () {
     var status = []
     var group = new Mongroup(conf)
     var procs = group.procs
-    if (procName) procs = procs.filter(function filter (proc) {
-      return proc.name === procName
-    })
+    if (procName) {
+      procs = procs.filter(function filter (proc) {
+        return proc.name === procName
+      })
+    }
     procs.forEach(function each (proc) {
       var state = proc.state()
       var uptime
