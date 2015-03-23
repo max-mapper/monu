@@ -25,6 +25,12 @@
   },
   "devDependencies": {
     "atom-shell": "^0.22.1",
-    "standard": "^3.2.1"
+    "github": "mikedeboer/node-github#ca90bf27d5820812c3b76908189d666446ed97cd",
+    "minimist": "^1.1.1",
+    "standard": "^3.2.1",
+    "string-editor": "^0.1.0"
+  },
+  "standard": {
+    "ignore": ["Monu.app/**"]
   }
 }
