@@ -56,6 +56,10 @@ app.on('ready', function() {
     shell.showItemInFolder(path.join(conf.exec.cwd, 'config.json'))
   })
   
+  ipc.on('open-logs-dir', function openLogsDir (ev, name) {
+    shell.showItemInFolder(path.join(conf.logs, name + '.log'))
+  })
+  
   ipc.on('get-all', function getAll (ev, data) {
     getStatus()
   })

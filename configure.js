@@ -28,6 +28,10 @@ var events = {
 
   openDir: function () {
     ipc.send('open-dir')
+  }, 
+  
+  openLogsDir: function (e) {
+    ipc.send('open-logs-dir', e.context.name)
   }
 }
 
