@@ -7,7 +7,12 @@
   "scripts": {
     "test": "standard",
     "app": "atom-shell ./",
-    "build": "atom-shell-packager . Monu --ignore=node_modules/atom-shell"
+    "build": "atom-shell-packager . Monu --ignore=node_modules/atom-shell",
+    "publish": "publish-release --template notes.md --assets Monu.zip"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maxogden/monu"
   },
   "author": "max ogden",
   "license": "BSD",
@@ -23,10 +28,8 @@
   },
   "devDependencies": {
     "atom-shell": "^0.22.1",
-    "github": "mikedeboer/node-github#ca90bf27d5820812c3b76908189d666446ed97cd",
-    "minimist": "^1.1.1",
-    "standard": "^3.2.1",
-    "string-editor": "^0.1.0"
+    "publish-release": "^1.0.1",
+    "standard": "^3.2.1"
   },
   "standard": {
     "ignore": [

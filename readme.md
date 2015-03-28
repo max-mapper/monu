@@ -67,12 +67,6 @@ npm run build # builds the mac app
 
 Before publishing, make sure that your repo is clean, and that you've created a tag for the latest commit. `npm version [major|minor|patch]` will do this for you, increasing the package.json version, creating a commit and adding a tag.
 
-To publish, you'll need to make an authentication token. Go to https://github.com/settings/tokens/new, and create a token like this:
-
-![screenshot](http://f.cl.ly/items/3W1H2C2Z0R2X0Q1s0X18/Screen%20Shot%202015-03-22%20at%205.39.32%20PM.png)
-
-Set that token as the environment variable `MONU_AUTH_TOKEN`. Then, run `make publish`.
-
 You should see something like this:
 
 ```
@@ -85,9 +79,17 @@ npm run build
 
 Wrote new app to /Users/maxogden/src/js/monu/Monu.app
 ditto -c -k --sequesterRsrc --keepParent Monu.app Monu.zip
-node publish-release.js --tag=v1.0.4 --token=<your token>
-child_process: customFds option is deprecated, use stdio instead.
-Creating release...
-Uploading Monu... this may take a minute
+npm run publish
+
+> monu@1.0.4 publish /Users/maxogden/src/js/monu
+> publish-release --template notes.md --assets Monu.zip
+
+? Git Tag: v1.0.4
+? Github repository owner: maxogden
+? Github repository name: monu
+? Release Name: Monu v1.0.4 Alpha
+
+Uploading Monu.zip
+[=================================================>] 100.0% (1.17 MB/s)
 Done! Published at: https://github.com/maxogden/monu/releases/tag/v1.0.4
 ```
