@@ -24,8 +24,8 @@ Be sure your JSON syntax is valid when editing the configuration. Here are suppo
 
 <ul>
   <li><b>processes</b> the processes to run (see below)</li>
-  <li><b>logs</b> the directory to store logs in (default config/pids)</li>
-  <li><b>pids</b> the directory to store PIDs in (default config/logs)</li>
+  <li><b>logs</b> the directory to store logs in (default config/logs)</li>
+  <li><b>pids</b> the directory to store PIDs in (default config/pids)</li>
   <li><b>on-error</b> a command to run when a process cannot start (default none)</li>
   <li><b>on-restart</b> a command to run when a process restarts (default none)</li>
   <li><b>sleep</b> sleep seconds before re-executing (default 1)</li>
