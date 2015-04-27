@@ -10,8 +10,8 @@ var debug = require('debug')('monu')
 var ipc = require('ipc')
 var shell = require('shell')
 
-// launching from .menu.app doesnt use bash and never loads .e.g. .bash_profile
-process.env.PATH = '/usr/local/bin:' + process.env.PATH
+// fix the $PATH on OS X
+require('fix-path')()
 
 var opts = {
   dir: __dirname,
