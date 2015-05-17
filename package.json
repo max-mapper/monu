@@ -6,8 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "standard",
-    "app": "atom-shell ./",
-    "build": "atom-shell-packager . Monu --ignore=node_modules/atom-shell",
+    "app": "electron ./",
+    "build": "electron-packager . Monu --platform=darwin --arch=x64 --version=0.28.0 --ignore=node_modules/electron",
     "publish": "publish-release --template notes.md --assets Monu.zip"
   },
   "repository": {
@@ -17,7 +17,7 @@
   "author": "max ogden",
   "license": "BSD",
   "dependencies": {
-    "atom-shell-packager": "^1.1.0",
+    "electron-packager": "^4.0.0",
     "debug": "^2.1.3",
     "fix-path": "^1.0.0",
     "menubar": "^2.0.0",
@@ -28,7 +28,7 @@
     "ractive": "^0.7.1"
   },
   "devDependencies": {
-    "atom-shell": "^0.22.1",
+    "electron-prebuilt": "^0.26.0",
     "publish-release": "^1.0.1",
     "standard": "^3.2.1"
   },
