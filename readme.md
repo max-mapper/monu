@@ -4,7 +4,7 @@
 
 Monu is an open source process monitoring menu bar application for Mac OS. You can configure Monu to launch programs, and when Monu starts up it will start them. Additionally, it will monitor the processes and restart them if they crash.
 
-Monu is a portmanteau of 'monitor' and 'menu'. It has two C/C++ dependencies, [Atom Shell](https://github.com/atom/atom-shell) (which includes iojs) and the [mon](https://github.com/tj/mon) process monitor.
+Monu is a portmanteau of 'monitor' and 'menu'. It has two C/C++ dependencies, [Electron](https://github.com/atom/electron) (which includes iojs) and the [mon](https://github.com/tj/mon) process monitor.
 
 Monu is currently **ALPHA STATUS** and is intended for developers/early adopters.
 
@@ -58,8 +58,8 @@ If you would like Monu.app to start when your Mac starts up, got to <b>System Pr
 ##### Developing
 
 ```bash
-npm install # installs atom-shell and all the deps needed for monu
-npm run app # runs the app in the atom-shell wrapper
+npm install # installs electron and all the deps needed for monu
+npm run app # runs the app in the electron wrapper
 npm run build # builds the mac app
 ```
 
@@ -75,7 +75,7 @@ rm -rf Monu.app Monu.zip # prevent duplicates in the final bundle
 npm run build
 
 > monu@1.0.4 build /Users/maxogden/src/js/monu
-> atom-shell-packager . Monu --ignore=node_modules/atom-shell
+> electron-packager . Monu --platform=darwin --arch=x64 --version=0.26.0 --ignore=node_modules/electron
 
 Wrote new app to /Users/maxogden/src/js/monu/Monu.app
 ditto -c -k --sequesterRsrc --keepParent Monu.app Monu.zip
