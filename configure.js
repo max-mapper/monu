@@ -5,6 +5,12 @@ var fs = require('fs')
 
 Ractive.DEBUG = false
 
+// Throw unhandled javascript errors
+window.onerror = function errorHandler (message, url, lineNumber) {
+  message = message + '\n' + url + ':' + lineNumber
+  throwError(message)
+}
+
 var templates = {
   configure: fs.readFileSync(__dirname + '/configure.tmpl').toString(),
   detail: fs.readFileSync(__dirname + '/detail.tmpl').toString(),
