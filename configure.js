@@ -80,7 +80,7 @@ page('/')
 // Load all statuses when the app gets focused
 client.on('show', function () {
   getAndRenderAll()
-  var currentProcess = state.detail.get('name')
+  var currentProcess = state.detail && state.detail.get('name')
   if (currentProcess) getAndRender(currentProcess)
 })
 
