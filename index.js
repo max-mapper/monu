@@ -7,6 +7,7 @@ var Mongroup = require('mongroup')
 var mkdir = require('mkdirp').sync
 var debug = require('debug')('monu')
 var shell = require('shell')
+var dialog = require('dialog')
 
 // fix the $PATH on OS X
 require('fix-path')()
@@ -16,9 +17,15 @@ var app = new Server()
 
 var opts = {dir: __dirname, icon: path.join(__dirname, 'images', 'Icon.png')}
 var menu = menubar(opts)
-var conf = loadConfig()
-menu.on('ready', function ready () {
+var conf
 
+process.on('uncaughtException', function (err) {
+  dialog.showErrorBox('Uncaught Exception: ' + err.message, err.stack || '')
+  menu.app.quit()
+})
+
+menu.on('ready', function ready () {
+  conf = loadConfig()
   var canQuit = false
   menu.app.on('will-quit', function tryQuit (e) {
     if (canQuit) return true
@@ -78,8 +85,6 @@ menu.on('ready', function ready () {
   })
 })
 
-
-
 function loadConfig () {
   var dir = path.join(menu.app.getPath('userData'), 'data')
   var configFile = dir + '/config.json'
@@ -100,7 +105,17 @@ function loadConfig () {
   try {
     conf = JSON.parse(data.toString())
   } catch (e) {
-    throw new Error('Invalid configuration file -- could not parse JSON')
+    var code = dialog.showMessageBox({
+      message: 'Invalid configuration file\nCould not parse JSON',
+      detail: e.stack,
+      buttons: ['Reload Config', 'Exit app']
+    })
+    if (code === 0) {
+      return loadConfig()
+    } else {
+      menu.app.quit()
+      return
+    }
   }
 
   conf.exec = {cwd: dir}
