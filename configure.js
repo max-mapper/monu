@@ -1,7 +1,8 @@
-var ipc = require('ipc')
 var Ractive = require('ractive')
 var page = require('page')
 var fs = require('fs')
+var Client = require('electron-rpc/client')
+var client = new Client()
 
 Ractive.DEBUG = false
 
@@ -25,63 +26,41 @@ var events = {
     var procNameAttr = e.node.attributes['data-name']
     var data = {task: action}
     if (procNameAttr) data.name = procNameAttr.value
-    ipc.send('task', data)
+    client.request('task', data, function (err, data) {
+      if (err) return throwError(err)
+      if (!data) return
+
+      if (Array.isArray(data)) {
+        renderAll(data)
+      } else if (data.name) {
+        state.detail.set(data)
+      }
+    })
   },
 
   quit: function () {
-    ipc.send('terminate')
+    client.request('terminate')
   },
 
   openDir: function () {
-    ipc.send('open-dir')
+    client.request('open-dir')
   },
 
   openLogsDir: function (e) {
-    ipc.send('open-logs-dir', e.context.name)
+    client.request('open-logs-dir', {name: e.context.name})
   }
 }
-
-ipc.on('got-all', function gotAll (data) {
-  data = data.map(function map (d) {
-    if (d.uptime) {
-      d.classes = 'btn-positive'
-      d.message = 'Running'
-      return d
-    }
-    if (d.state === 'dead') {
-      d.classes = 'btn-negative'
-      d.message = 'Dead'
-      return d
-    }
-
-    d.message = 'Not Running'
-    return d
-  })
-  var obj = {items: data}
-  if (data.length > 0) obj.hasProcesses = true
-  state.configure.set(obj)
-})
-
-ipc.on('got-one', function gotOne (data) {
-  state.detail.set(data)
-})
 
 var routes = {
   configure: function configure (ctx, next) {
     ctx.template = templates.configure
     state.configure = render(ctx, {loading: true})
-    ipc.send('get-all')
-    ipc.once('status', function gotOnce () {
-      next()
-    })
+    getAndRenderAll(next)
   },
   detail: function detail (ctx, next) {
     ctx.template = templates.detail
     state.detail = render(ctx, {loading: true})
-    ipc.send('get-one', {name: ctx.params.name})
-    ipc.once('status', function gotOnce () {
-      next()
-    })
+    getAndRender(ctx.params.name, next)
   },
   about: function about (ctx, next) {
     ctx.template = templates.about
@@ -98,6 +77,13 @@ page('/about', routes.about)
 page.start()
 page('/')
 
+// Load all statuses when the app gets focused
+client.on('show', function () {
+  getAndRenderAll()
+  var currentProcess = state.detail.get('name')
+  if (currentProcess) getAndRender(currentProcess)
+})
+
 function render (ctx) {
   var ract = new Ractive({
     el: '#container',
@@ -107,4 +93,41 @@ function render (ctx) {
 
   ract.on(events)
   return ract
+}
+
+function getAndRenderAll (callback) {
+  callback = catchErrors(callback || function () {})
+  client.request('get-all', function (err, data) {
+    if (err) return callback(err)
+    renderAll(data)
+    callback()
+  })
+}
+
+function renderAll (data) {
+  data = data || []
+  var obj = {items: data, hasProcesses: data.length > 0}
+  state.configure.set(obj)
+}
+
+function getAndRender (name, callback) {
+  callback = catchErrors(callback || function () {})
+  client.request('get-one', {name: name}, function (err, data) {
+    if (err) return callback(err)
+    state.detail.set(data)
+    callback()
+  })
+}
+
+function catchErrors (callback) {
+  return function throwErrorsOrContinue (err) {
+    if (err) return throwError(err)
+    callback()
+  }
+}
+
+function throwError (error) {
+  message = error.stack || error.message || JSON.stringify(error)
+  console.error(message)
+  window.alert(message)
 }
