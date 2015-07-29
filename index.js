@@ -160,8 +160,8 @@ menu.on('ready', function ready () {
   function stop (procs, cb) {
     var group = new Mongroup(conf)
     group.stop(procs, 'SIGQUIT', function onstop (err) {
-      if (cb) return cb(err)
-      cb()
+      if (!err || err.code == 'ENOENT') return cb()
+      cb(err)
     })
   }
 })
