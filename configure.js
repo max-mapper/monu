@@ -127,7 +127,7 @@ function catchErrors (callback) {
 }
 
 function throwError (error) {
-  message = error.stack || error.message || JSON.stringify(error)
+  var message = error.stack || error.message || JSON.stringify(error)
   console.error(message)
   window.alert(message)
 }
