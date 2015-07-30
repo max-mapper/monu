@@ -6,29 +6,32 @@ var ms = require('ms')
 var Mongroup = require('mongroup')
 var mkdir = require('mkdirp').sync
 var debug = require('debug')('monu')
-
-var ipc = require('ipc')
 var shell = require('shell')
+var dialog = require('dialog')
 
 // fix the $PATH on OS X
 require('fix-path')()
 
-var opts = {
-  dir: __dirname,
-  icon: path.join(__dirname, 'images', 'Icon.png')
-}
+var Server = require('electron-rpc/server')
+var app = new Server()
 
+var opts = {dir: __dirname, icon: path.join(__dirname, 'images', 'Icon.png')}
 var menu = menubar(opts)
+var conf
+
+process.on('uncaughtException', function (err) {
+  dialog.showErrorBox('Uncaught Exception: ' + err.message, err.stack || '')
+  menu.app.quit()
+})
 
 menu.on('ready', function ready () {
+  conf = loadConfig()
   var canQuit = false
   menu.app.on('will-quit', function tryQuit (e) {
     if (canQuit) return true
     menu.window = undefined
     e.preventDefault()
   })
-
-  var conf = loadConfig()
 
   // start all once
   start([], function started (err) {
@@ -37,131 +40,143 @@ menu.on('ready', function ready () {
   })
 
   menu.on('show', function show () {
-    getStatus()
+    app.configure(menu.window.webContents)
+    app.send('show')
   })
 
-  ipc.on('terminate', function terminate (ev) {
+  app.on('terminate', function terminate (ev) {
     canQuit = true
     menu.app.terminate()
   })
 
-  ipc.on('open-dir', function openDir (ev) {
+  app.on('open-dir', function openDir (ev) {
     shell.showItemInFolder(path.join(conf.exec.cwd, 'config.json'))
   })
 
-  ipc.on('open-logs-dir', function openLogsDir (ev, name) {
-    shell.showItemInFolder(path.join(conf.logs, name + '.log'))
+  app.on('open-logs-dir', function openLogsDir (req) {
+    shell.showItemInFolder(path.join(conf.logs, req.body.name + '.log'))
   })
 
-  ipc.on('get-all', function getAll (ev, data) {
-    getStatus()
+  app.on('get-all', function getAll (req, next) {
+    next(null, getProcessesStatus())
   })
 
-  ipc.on('get-one', function getOne (ev, data) {
-    getStatus(null, data.name)
+  app.on('get-one', function getOne (req, next) {
+    next(null, getProcessStatus(req.body.name))
   })
 
-  ipc.on('task', function task (ev, data) {
-    if (data.task === 'startAll') start([], getStatus)
-    if (data.task === 'stopAll') stop([], getStatus)
-    if (data.task === 'restartAll') restart([], getStatus)
-    if (data.task === 'start') start([data.name], updateSingle)
-    if (data.task === 'stop') stop([data.name], updateSingle)
-    if (data.task === 'restart') restart([data.name], updateSingle)
+  app.on('task', function task (req, next) {
+    if (req.body.task === 'startAll') start([], updateAll)
+    if (req.body.task === 'stopAll') stop([], updateAll)
+    if (req.body.task === 'restartAll') restart([], updateAll)
+    if (req.body.task === 'start') start([req.body.name], updateSingle)
+    if (req.body.task === 'stop') stop([req.body.name], updateSingle)
+    if (req.body.task === 'restart') restart([req.body.name], updateSingle)
 
-    function updateSingle () {
-      getStatus(null, data.name)
+    function updateAll (err) {
+      if (err) throw err
+      next(null, getProcessesStatus())
+    }
+
+    function updateSingle (err) {
+      if (err) throw err
+      next(null, getProcessStatus(req.body.name))
     }
   })
-
-  function loadConfig () {
-    var dir = path.join(menu.app.getPath('userData'), 'data')
-    var configFile = dir + '/config.json'
-    var conf, data
-
-    try {
-      data = fs.readFileSync(configFile)
-    } catch (e) {
-      if (e.code === 'ENOENT') {
-        mkdir(dir)
-        fs.writeFileSync(configFile, fs.readFileSync(__dirname + '/config.json'))
-        return loadConfig()
-      } else {
-        throw e
-      }
-    }
-
-    try {
-      conf = JSON.parse(data.toString())
-    } catch (e) {
-      throw new Error('Invalid configuration file -- could not parse JSON')
-    }
-
-    conf.exec = {cwd: dir}
-    conf.logs = path.resolve(path.join(dir, conf.logs || 'logs'))
-    conf.pids = path.resolve(path.join(dir, conf.pids || 'pids'))
-
-    mkdir(conf.logs)
-    mkdir(conf.pids)
-
-    conf.mon = path.join(__dirname, 'mon')
-    return conf
-  }
-
-  function getStatus (err, procName) {
-    if (err) throw err
-    if (!menu.window) return
-    debug('reload config, get proc status...')
-    conf = loadConfig()
-    var status = []
-    var group = new Mongroup(conf)
-    var procs = group.procs
-    if (procName) {
-      procs = procs.filter(function filter (proc) {
-        return proc.name === procName
-      })
-    }
-    procs.forEach(function each (proc) {
-      var state = proc.state()
-      var uptime
-      if (state === 'alive') uptime = ms(Date.now() - proc.mtime(), { long: true })
-      var item = {
-        cmd: proc.cmd,
-        name: proc.name,
-        state: state,
-        pid: proc.pid
-      }
-
-      if (uptime) item.uptime = uptime
-
-      status.push(item)
-    })
-
-    if (procName) menu.window.webContents.send('got-one', status[0])
-    else menu.window.webContents.send('got-all', status)
-  }
-
-  function restart (procs, cb) {
-    stop(procs, function onstop (err1) {
-      start(procs, function onstart (err2) {
-        if (cb) cb(err1 || err2)
-      })
-    })
-  }
-
-  function start (procs, cb) {
-    var group = new Mongroup(conf)
-    group.start(procs, function onstart (err) {
-      if (err) return cb(err)
-      cb()
-    })
-  }
-
-  function stop (procs, cb) {
-    var group = new Mongroup(conf)
-    group.stop(procs, 'SIGQUIT', function onstop (err) {
-      if (cb) return cb(err)
-      cb()
-    })
-  }
 })
+
+function loadConfig () {
+  var dir = path.join(menu.app.getPath('userData'), 'data')
+  var configFile = dir + '/config.json'
+  var conf, data
+
+  try {
+    data = fs.readFileSync(configFile)
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      mkdir(dir)
+      fs.writeFileSync(configFile, fs.readFileSync(__dirname + '/config.json'))
+      return loadConfig()
+    } else {
+      throw e
+    }
+  }
+
+  try {
+    conf = JSON.parse(data.toString())
+  } catch (e) {
+    var code = dialog.showMessageBox({
+      message: 'Invalid configuration file\nCould not parse JSON',
+      detail: e.stack,
+      buttons: ['Reload Config', 'Exit app']
+    })
+    if (code === 0) {
+      return loadConfig()
+    } else {
+      menu.app.quit()
+      return
+    }
+  }
+
+  conf.exec = {cwd: dir}
+  conf.logs = path.resolve(path.join(dir, conf.logs || 'logs'))
+  conf.pids = path.resolve(path.join(dir, conf.pids || 'pids'))
+
+  mkdir(conf.logs)
+  mkdir(conf.pids)
+
+  conf.mon = path.join(__dirname, 'mon')
+  return conf
+}
+
+function getProcessStatus (procName) {
+  var procs = getProcessesStatus()
+  return procs.filter(function filter (proc) {
+    return proc.name === procName
+  })[0]
+}
+
+function getProcessesStatus () {
+  debug('reload config, get proc status...')
+  conf = loadConfig()
+  var group = new Mongroup(conf)
+  var procs = group.procs
+
+  return procs.map(function each (proc) {
+    var uptime, state = proc.state()
+    if (state === 'alive') uptime = ms(Date.now() - proc.mtime(), { long: true })
+    var item = {
+      cmd: proc.cmd,
+      name: proc.name,
+      state: state,
+      pid: proc.pid,
+      uptime: uptime ? uptime : undefined
+    }
+
+    return item
+  })
+}
+
+function restart (procs, cb) {
+  stop(procs, function onstop (err1) {
+    start(procs, function onstart (err2) {
+      if (cb) cb(err1 || err2)
+    })
+  })
+}
+
+function start (procs, cb) {
+  var group = new Mongroup(conf)
+  group.start(procs, function onstart (err) {
+    if (err) return cb(err)
+    cb()
+  })
+}
+
+function stop (procs, cb) {
+  var group = new Mongroup(conf)
+  group.stop(procs, 'SIGQUIT', function onstop (err) {
+    if (!err || err.code === 'ENOENT') return cb()
+    cb(err)
+  })
+}

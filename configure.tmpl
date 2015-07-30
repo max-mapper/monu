@@ -1,7 +1,14 @@
 <ul class="table-view">
   <li class="table-view-cell table-view-divider">Processes</li>
   {{#items}}
-    <li class="table-view-cell media"><a href="/detail/{{name}}" class="navigate-right"><span class="media-object pull-left icon icon-gear"></span> {{name}} <button class="btn {{classes}}">{{message}}</button></a></li>
+    <li class="table-view-cell media">
+      <a href="/detail/{{name}}" class="navigate-right">
+        <span class="media-object pull-left icon icon-gear"></span> {{name}}
+        {{#state == 'alive'}}<button class="btn btn-positive">Running</button>{{/state}}
+        {{#state == 'dead'}}<button class="btn btn-negative">Dead</button>{{/state}}
+        {{#state == 'stopped'}}<button class="btn">Not running</button>{{/state}}
+      </a>
+    </li>
   {{/items}}
   {{^items}}
     <li class="table-view-cell media">No Processes Configured</li>
