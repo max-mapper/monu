@@ -5,9 +5,9 @@
       <li class="table-view-cell media">
         <a href="/detail/{{name}}" class="navigate-right">
           <span class="media-object pull-left icon icon-gear"></span> {{name}}
-          {{#state == 'alive'}}<button class="btn btn-positive">Running</button>{{/state}}
-          {{#state == 'dead'}}<button class="btn btn-negative">Dead</button>{{/state}}
-          {{#state == 'stopped'}}<button class="btn">Not running</button>{{/state}}
+          {{#state == 'alive'}}<span class="badge badge-positive">Running</span>{{/state}}
+          {{#state == 'dead'}}<span class="badge badge-negative">Dead</span>{{/state}}
+          {{#state == 'stopped'}}<span class="badge">Not running</span>{{/state}}
         </a>
       </li>
     {{/items}}
