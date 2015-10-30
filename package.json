@@ -15,7 +15,7 @@
     "url": "https://github.com/maxogden/monu"
   },
   "author": "max ogden",
-  "license": "BSD",
+  "license": "BSD-2-Clause",
   "dependencies": {
     "debug": "^2.1.3",
     "electron-rpc": "^1.0.0",
