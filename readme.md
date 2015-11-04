@@ -59,7 +59,7 @@ If you would like Monu.app to start when your Mac starts up, got to <b>System Pr
 
 ```bash
 npm install # installs electron and all the deps needed for monu
-npm run app # runs the app in the electron wrapper
+npm start # runs the app in the electron wrapper
 npm run build # builds the mac app
 ```
 
