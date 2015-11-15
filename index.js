@@ -67,10 +67,10 @@ menu.on('ready', function ready () {
 
   app.on('task', function task (req, next) {
     if (req.body.task === 'startAll') start([], updateAll)
-    if (req.body.task === 'stopAll') stop([], updateAll)
+    if (req.body.task === 'stopAll') stop([], req.body.signal, updateAll)
     if (req.body.task === 'restartAll') restart([], updateAll)
     if (req.body.task === 'start') start([req.body.name], updateSingle)
-    if (req.body.task === 'stop') stop([req.body.name], updateSingle)
+    if (req.body.task === 'stop') stop([req.body.name], req.body.signal, updateSingle)
     if (req.body.task === 'restart') restart([req.body.name], updateSingle)
 
     function updateAll (err) {
@@ -158,7 +158,7 @@ function getProcessesStatus () {
 }
 
 function restart (procs, cb) {
-  stop(procs, function onstop (err1) {
+  stop(procs, 'SIGQUIT', function onstop (err1) {
     start(procs, function onstart (err2) {
       if (cb) cb(err1 || err2)
     })
@@ -173,9 +173,10 @@ function start (procs, cb) {
   })
 }
 
-function stop (procs, cb) {
+function stop (procs, signal, cb) {
+  if (!signal) signal = 'SIGQUIT'
   var group = new Mongroup(conf)
-  group.stop(procs, 'SIGQUIT', function onstop (err) {
+  group.stop(procs, signal, function onstop (err) {
     if (!err || err.code === 'ENOENT') return cb()
     cb(err)
   })

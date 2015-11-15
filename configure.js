@@ -26,16 +26,7 @@ var events = {
     var procNameAttr = e.node.attributes['data-name']
     var data = {task: action}
     if (procNameAttr) data.name = procNameAttr.value
-    client.request('task', data, function (err, data) {
-      if (err) return throwError(err)
-      if (!data) return
-
-      if (Array.isArray(data)) {
-        renderAll(data)
-      } else if (data.name) {
-        state.detail.set(data)
-      }
-    })
+    execTask(data)
   },
 
   quit: function () {
@@ -44,6 +35,27 @@ var events = {
 
   openDir: function () {
     client.request('open-dir')
+  },
+
+  openKillMenu: function (e) {
+    var remote = require('remote')
+    var Menu = remote.require('menu')
+    var MenuItem = remote.require('menu-item')
+
+    function sendSignal (signal) {
+      return function () {
+        var procNameAttr = e.node.attributes['data-name']
+        execTask({task: 'stop', name: procNameAttr.value, signal: signal})
+      }
+    }
+
+    var menu = new Menu()
+    ;['SIGTERM', 'SIGHUP', 'SIGINT', 'SIGKILL', 'SIGQUIT'].forEach(function (signal) {
+      menu.append(new MenuItem({ label: 'Send ' + signal, click: sendSignal(signal) }))
+    })
+
+    menu.popup(remote.getCurrentWindow())
+    return false
   },
 
   openLogsDir: function (e) {
@@ -83,6 +95,19 @@ client.on('show', function () {
   var currentProcess = state.detail && state.detail.get('name')
   if (currentProcess) getAndRender(currentProcess)
 })
+
+function execTask (task) {
+  client.request('task', task, function (err, data) {
+    if (err) return throwError(err)
+    if (!data) return
+
+    if (Array.isArray(data)) {
+      renderAll(data)
+    } else if (data.name) {
+      state.detail.set(data)
+    }
+  })
+}
 
 function render (ctx) {
   var ract = new Ractive({
