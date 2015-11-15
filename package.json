@@ -1,7 +1,7 @@
 {
   "name": "monu",
   "productName": "Monu",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "menubar process monitor mac app",
   "main": "index.js",
   "scripts": {
