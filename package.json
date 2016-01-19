@@ -7,7 +7,7 @@
   "scripts": {
     "test": "standard",
     "start": "electron ./",
-    "build": "electron-packager . Monu --platform=darwin --arch=x64 --version=0.36.4",
+    "build": "electron-packager . Monu --platform=darwin --arch=x64 --version=0.36.4 --icon=images/Monu.icns",
     "publish": "publish-release --template notes.md --assets Monu.zip"
   },
   "repository": {
