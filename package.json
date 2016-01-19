@@ -7,7 +7,7 @@
   "scripts": {
     "test": "standard",
     "start": "electron ./",
-    "build": "electron-packager . Monu --platform=darwin --arch=x64 --version=0.34.2 --ignore='node_modules/electron-(packager|prebuild)'",
+    "build": "electron-packager . Monu --platform=darwin --arch=x64 --version=0.36.4",
     "publish": "publish-release --template notes.md --assets Monu.zip"
   },
   "repository": {
@@ -25,11 +25,12 @@
     "mongroup": "maxogden/node-mongroup#monbin",
     "ms": "^0.7.0",
     "page": "^1.6.1",
-    "ractive": "^0.7.1"
+    "ractive": "^0.7.1",
+    "user-env": "^2.0.0"
   },
   "devDependencies": {
     "electron-packager": "^4.0.0",
-    "electron-prebuilt": "^0.34.2",
+    "electron-prebuilt": "^0.36.4",
     "publish-release": "^1.0.1",
     "standard": "^3.2.1"
   },

@@ -9,8 +9,13 @@ var debug = require('debug')('monu')
 var shell = require('shell')
 var dialog = require('dialog')
 
-// fix the $PATH on OS X
+// try to fix the $PATH on OS X
 require('fix-path')()
+
+// use current user env (https://github.com/sindresorhus/shell-path/issues/7)
+try {
+  process.env = require('user-env')()
+} catch (e) {}
 
 var Server = require('electron-rpc/server')
 var app = new Server()
