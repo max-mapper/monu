@@ -51,7 +51,7 @@ menu.on('ready', function ready () {
 
   app.on('terminate', function terminate (ev) {
     canQuit = true
-    menu.app.terminate()
+    menu.app.quit()
   })
 
   app.on('open-dir', function openDir (ev) {
