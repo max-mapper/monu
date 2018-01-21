@@ -3,5 +3,6 @@
   "pids": "./pids",
   "processes": {
 
-  }
+  },
+	"autolaunch": "false"
 }

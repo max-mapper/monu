@@ -60,6 +60,10 @@ var events = {
 
   openLogsDir: function (e) {
     client.request('open-logs-dir', {name: e.context.name})
+  },
+
+  toggleAutoLaunch: function (e) {
+    renderAutoLaunch('toggle')
   }
 }
 
@@ -127,6 +131,7 @@ function getAndRenderAll (callback) {
     renderAll(data)
     callback()
   })
+  renderAutoLaunch('get')
 }
 
 function renderAll (data) {
@@ -141,6 +146,12 @@ function getAndRender (name, callback) {
     if (err) return callback(err)
     state.detail.set(data)
     callback()
+  })
+}
+
+function renderAutoLaunch (cmd) {
+  client.request('autolaunch', {cmd: cmd}, function (err, isEnabled) {
+    state.configure.set({autoLaunch: isEnabled})
   })
 }
 

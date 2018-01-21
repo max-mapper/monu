@@ -42,6 +42,17 @@
     </li>
     {{/hasProcesses}}
     <li class="table-view-cell media">
+      <a class="cursor-pointer" on-click="toggleAutoLaunch">
+        <span class="media-object pull-left icon icon-check"></span>
+        <div class="media-body">
+          Start Monu at login
+        </div>
+        <div class="toggle {{autoLaunch ? 'active' : ''}}">
+          <div class="toggle-handle"></div>
+        </div>
+      </a>
+    </li>
+    <li class="table-view-cell media">
       <a class="navigate-right" href="/about">
         <span class="media-object pull-left icon icon-search"></span>
         <div class="media-body">
