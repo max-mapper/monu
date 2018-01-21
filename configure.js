@@ -30,7 +30,7 @@ var events = {
   },
 
   quit: function () {
-    client.request('terminate')
+    client.request('quit')
   },
 
   openDir: function () {
