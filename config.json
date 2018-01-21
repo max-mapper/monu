@@ -4,5 +4,6 @@
   "processes": {
 
   },
-	"autolaunch": "false"
+	"autolaunch": "false",
+	"stopsignal": "SIGINT"
 }

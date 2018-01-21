@@ -181,7 +181,7 @@ function getProcessesStatus () {
 }
 
 function restart (procs, cb) {
-  stop(procs, 'SIGQUIT', function onstop (err1) {
+  stop(procs, conf.stopsignal, function onstop (err1) {
     start(procs, function onstart (err2) {
       if (cb) cb(err1 || err2)
     })
@@ -197,7 +197,7 @@ function start (procs, cb) {
 }
 
 function stop (procs, signal, cb) {
-  if (!signal) signal = 'SIGQUIT'
+  if (!signal) signal = conf.stopsignal
   var group = new Mongroup(conf)
   group.stop(procs, signal, function onstop (err) {
     if (!err || err.code === 'ENOENT') return cb()
