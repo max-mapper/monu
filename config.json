@@ -3,5 +3,7 @@
   "pids": "./pids",
   "processes": {
 
-  }
+  },
+	"autolaunch": "false",
+	"stopsignal": "SIGINT"
 }

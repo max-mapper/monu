@@ -8,6 +8,7 @@ var mkdir = require('mkdirp').sync
 var debug = require('debug')('monu')
 var shell = require('shell')
 var dialog = require('dialog')
+var AutoLaunch = require('auto-launch')
 
 // try to fix the $PATH on OS X
 require('fix-path')()
@@ -23,6 +24,7 @@ var app = new Server()
 var opts = {dir: __dirname, icon: path.join(__dirname, 'images', 'Icon.png')}
 var menu = menubar(opts)
 var conf
+var autolaunch = new AutoLaunch({name: 'Monu', path: '/Applications/Monu.app'})
 
 process.on('uncaughtException', function (err) {
   dialog.showErrorBox('Uncaught Exception: ' + err.message, err.stack || '')
@@ -49,9 +51,9 @@ menu.on('ready', function ready () {
     app.send('show')
   })
 
-  app.on('terminate', function terminate (ev) {
+  app.on('quit', function quit (ev) {
     canQuit = true
-    menu.app.terminate()
+    menu.app.quit()
   })
 
   app.on('open-dir', function openDir (ev) {
@@ -77,6 +79,7 @@ menu.on('ready', function ready () {
     if (req.body.task === 'start') start([req.body.name], updateSingle)
     if (req.body.task === 'stop') stop([req.body.name], req.body.signal, updateSingle)
     if (req.body.task === 'restart') restart([req.body.name], updateSingle)
+    if (req.body.task === 'toggleAutoLaunch') toggleAutoLaunch()
 
     function updateAll (err) {
       if (err) throw err
@@ -87,6 +90,21 @@ menu.on('ready', function ready () {
       if (err) throw err
       next(null, getProcessStatus(req.body.name))
     }
+  })
+
+  app.on('autolaunch', function autoLaunch (req, next) {
+    console.log('autoLaunch')
+    autolaunch.isEnabled()
+      .then(function(isEnabled) {
+        console.log('autolaunch isEnabled: ' + isEnabled)
+        if (req.body.cmd == 'get') {
+          next(null, isEnabled)
+        }
+        else if (req.body.cmd == 'toggle') {
+          isEnabled ? autolaunch.disable() : autolaunch.enable()
+          next(null, !isEnabled)
+        }
+      })
   })
 })
 
@@ -163,7 +181,7 @@ function getProcessesStatus () {
 }
 
 function restart (procs, cb) {
-  stop(procs, 'SIGQUIT', function onstop (err1) {
+  stop(procs, conf.stopsignal, function onstop (err1) {
     start(procs, function onstart (err2) {
       if (cb) cb(err1 || err2)
     })
@@ -179,7 +197,7 @@ function start (procs, cb) {
 }
 
 function stop (procs, signal, cb) {
-  if (!signal) signal = 'SIGQUIT'
+  if (!signal) signal = conf.stopsignal
   var group = new Mongroup(conf)
   group.stop(procs, signal, function onstop (err) {
     if (!err || err.code === 'ENOENT') return cb()
